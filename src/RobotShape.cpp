@@ -10,6 +10,7 @@
 #include "RobotWorldCanvas.hpp"
 #include "Shape2DUtils.hpp"
 #include "Trace.hpp"
+#include "Wall.hpp"
 
 #include <cmath>
 
@@ -244,20 +245,60 @@ namespace View
 	 */
 	void RobotShape::drawLaser( wxDC& dc)
 	{
-		double angle = Utils::Shape2DUtils::getAngle( getRobot()->getFront());
-
+		
 		// Draw the laser beam
 		dc.SetPen( wxPen(  "RED", 1, wxPENSTYLE_SOLID));
-		dc.DrawLine( centre.x, centre.y, static_cast< int >( centre.x + std::cos( angle) * Model::laserBeamLength), static_cast< int >( centre.y + std::sin( angle) * Model::laserBeamLength));
-
-		// Draw the radar endPoints that are actually touching the walls
-		for (const Model::DistancePercept &d : getRobot()->currentRadarPointCloud)
+		for(int i = 0;i<180;i++)
 		{
-			if (d.point != wxDefaultPosition || (d.point.x != Model::noObject && d.point.y != Model::noObject))
+			double angle = Utils::Shape2DUtils::getAngle( getRobot()->getFront());
+			angle = angle + Utils::MathUtils::toRadians(2*i);
+			double minDist = 999999;
+			double dist = 0;
+			wxPoint intersection;
+			std::vector< Model::WallPtr > walls = Model::RobotWorld::getRobotWorld().getWalls();
+			wxPoint endLaser(static_cast< int >( centre.x + std::cos( angle) * Model::laserBeamLength), static_cast< int >( centre.y + std::sin( angle) * Model::laserBeamLength));
+			for (Model::WallPtr wall : walls)
 			{
-				dc.SetPen( wxPen(  "RED", borderWidth, wxPENSTYLE_SOLID));
-				dc.DrawCircle( d.point, 1);
+				intersection = Utils::Shape2DUtils::getIntersection(getRobot()->getPosition(),endLaser,wall->getPoint1(),wall->getPoint2());
+				dist = Utils::Shape2DUtils::distance(getRobot()->getPosition(),intersection);
+				if(dist<minDist&&intersection!=wxDefaultPosition)
+				{
+					minDist = dist;
+				}
+			}
+			if(minDist<Model::laserBeamLength)
+			{
+				// dc.DrawLine(centre.x,centre.y,static_cast< int >( centre.x + std::cos( angle) * minDist), static_cast< int >( centre.y + std::sin( angle) * minDist));
 			}
 		}
+		// Draw the radar endPoints that are actually touching the walls
+		
+		dc.SetPen( wxPen(  "PURPLE", borderWidth, wxPENSTYLE_SOLID));
+		const std::vector<wxPoint>* beliefPath;
+		if(Application::MainApplication::getSettings().getFilterType()==0){
+			beliefPath = &getRobot()->getKalmanBeliefPath();
+		}
+		else{
+			beliefPath = &getRobot()->getParticleBeliefPath();
+		}
+
+		if(beliefPath->size()>1)
+		{
+			for(std::size_t index = 0;index<beliefPath->size()-1;index++)
+			{
+				dc.DrawLine(beliefPath->at(index),beliefPath->at(index+1));
+			}
+		}
+
+		dc.SetPen( wxPen(  "GREEN", borderWidth, wxPENSTYLE_SOLID));
+		const std::vector<wxPoint>& particles = getRobot()->getParticleFilter().getParticles();
+		if(particles.size()>0)
+		{
+			for(wxPoint particle:particles)
+			{
+				dc.DrawCircle(particle, 2);
+			}
+		}
+		
 	}
 } // namespace View

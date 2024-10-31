@@ -44,11 +44,20 @@ namespace Application
 			 *
 			 */
 			void setWorldNumber( unsigned long aWorldNumber);
+			/**
+			 *
+			 */
+			unsigned long getFilterType() const;
+			/**
+			 *
+			 */
+			void setFilterType( unsigned long aFilterType);
 
 		private:
 			bool drawOpenSet;
 			unsigned long speed;
 			unsigned long worldNumber;
+			unsigned long filterType;
 	};
 
 } /* namespace Application */

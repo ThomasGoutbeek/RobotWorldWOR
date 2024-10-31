@@ -29,7 +29,7 @@ namespace Model
 			/**
 			 *
 			 */
-			virtual std::shared_ptr< AbstractStimulus > getStimulus() const override;
+			virtual std::shared_ptr< AbstractStimulus > getStimulus(double angle,wxPoint robotPos) const override;
 			/**
 			 *
 			 */

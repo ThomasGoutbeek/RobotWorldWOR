@@ -15,10 +15,12 @@
 #include "Wall.hpp"
 #include "WayPoint.hpp"
 
+#include <random>
 #include <chrono>
 #include <ctime>
 #include <sstream>
 #include <thread>
+#include <cmath>
 
 namespace Model
 {
@@ -46,13 +48,20 @@ namespace Model
 								speed( 0.0),
 								acting(false),
 								driving(false),
-								communicating(false)
+								communicating(false),
+								kalmanF(Matrix<double,2,1>{position.x,position.y},Matrix<double,2,2>{{1,0},{0,1}}),
+								previousDistance(0),
+								totalDistance(0)
+
 	{
 		std::shared_ptr< AbstractSensor > laserSensor = std::make_shared<LaserDistanceSensor>( *this);
 		attachSensor( laserSensor);
 
 		// We use the real position for starters, not an estimated position.
 		startPosition = position;
+		kalmanBeliefPos = position;
+		stddevAngle = 2;
+		stddevDistance = 1;
 	}
 	/**
 	 *
@@ -444,23 +453,55 @@ namespace Model
 			}
 
 			// We use the real position for starters, not an estimated position.
+			particleF.clearParticles();
+			if(Application::MainApplication::getSettings().getFilterType() == 0)
+			{
+				kalmanBeliefPos = position;
+				kalmanBeliefPath.clear();
+				kalmanF.setStates(Matrix<double,2,1>{position.x,position.y});
+			}
+			else{
+				particleBeliefPath.clear();
+				particleF.generateParticles();
+			}
 			startPosition = position;
+			
+			
 
 			unsigned pathPoint = 0;
-			while (position.x > 0 && position.x < 500 && position.y > 0 && position.y < 500 && pathPoint < path.size()) // @suppress("Avoid magic numbers")
+			while (position.x > 0 && position.x < 1024 && position.y > 0 && position.y < 1024 && pathPoint < path.size()) // @suppress("Avoid magic numbers")
 			{
 				// Do the update
+				LaserDistanceSensor* laser = nullptr;
+				if(Application::MainApplication::getSettings().getFilterType() == 1)
+				{
+					laser = dynamic_cast<LaserDistanceSensor*>(sensors.at(0).get());
+				}
+				wxPoint oldPos = position;
+				if(laser)
+				{
+					particleF.generateRobotStimuli(position,*laser);
+				}
+				double angle = Utils::Shape2DUtils::getAngle(front) + Utils::MathUtils::toRadians(generateNoise(stddevAngle));
+				
 				const PathAlgorithm::Vertex& vertex = path[pathPoint+=static_cast<unsigned int>(speed)];
 				front = BoundedVector( vertex.asPoint(), position);
 				position.x = vertex.x;
 				position.y = vertex.y;
-
+				previousDistance = Utils::Shape2DUtils::distance(position,oldPos) + generateNoise(stddevDistance);
+				totalDistance = totalDistance + previousDistance;
+				if(Application::MainApplication::getSettings().getFilterType() == 0)
+				{
+					kalmanFilter(angle);
+				}
+				
 				// Do the measurements / handle all percepts
 				// TODO There are race conditions here:
 				//			1. size() is not atomic
 				//			2. any percepts added after leaving the while will not be used during the belief update
 				while(perceptQueue.size() > 0)
 				{
+					//std::cout<<perceptQueue.size()<<std::endl;
 					std::optional< std::shared_ptr< AbstractPercept >> percept = perceptQueue.dequeue();
 					if(percept)
 					{
@@ -481,9 +522,17 @@ namespace Model
 						Application::Logger::log("Huh??");
 					}
 				}
-
+				
 				// Update the belief
-
+				if(laser)
+				{
+					particleF.updateParticles(getMeasurement(getUpdate(angle)));
+					particleF.calcWeight(*laser);
+					particleF.reverseWeights();
+   					particleF.getNewParticles();
+					particleBeliefPos = particleF.getBeliefPos();
+					particleBeliefPath.push_back(particleBeliefPos);
+				}
 				// Stop on arrival or collision
 				if (arrived(goal) || collision())
 				{
@@ -583,6 +632,64 @@ namespace Model
 			}
 		}
 		return false;
+	}
+	wxPoint Robot::getUpdate(double angle){
+		double deltaX = previousDistance*cos(angle);
+		double deltaY = previousDistance*sin(angle);
+		return wxPoint(deltaX,deltaY);
+	}
+
+	wxPoint Robot::getMeasurement(wxPoint update)
+	{
+		double stddevAngleRad = Utils::MathUtils::toRadians(stddevAngle);
+		double measurementNoiseX = generateNoise(stddevDistance)*cos(stddevAngleRad);
+		double measurementNoiseY = generateNoise(stddevDistance)*sin(stddevAngleRad);
+		double measurementX = update.x + measurementNoiseX;
+		double measurementY = update.y + measurementNoiseY;
+		return wxPoint(measurementX,measurementY);
+	}
+
+	void Robot::kalmanFilter(double angle)
+	{
+		wxPoint update = getUpdate(angle);
+		wxPoint measurement = getMeasurement(update);
+		double totalX = kalmanBeliefPos.x + measurement.x;
+		double totalY = kalmanBeliefPos.y + measurement.y;
+
+		double stddevAngleRad = Utils::MathUtils::toRadians(stddevAngle);
+
+		double covarianceDeltaX = pow(stddevDistance * cos(stddevAngleRad),2);
+		double covarianceDeltaY = pow(stddevDistance * sin(stddevAngleRad),2);
+		
+		Matrix<double,2,1> updateMatrix{update.x,update.y};
+		Matrix<double,2,2> sensorStd{{covarianceDeltaX,0},{0,covarianceDeltaY}};
+		Matrix<double,2,1> measurementMatrix{totalX,totalY};
+		kalmanBeliefPos = kalmanF.filter(updateMatrix,sensorStd,measurementMatrix);
+		kalmanBeliefPath.push_back(kalmanBeliefPos);
+	}
+
+	double Robot::generateNoise(double stddev)
+	{
+		std::random_device rd{};
+		std::mt19937 gen{rd()};
+		std::normal_distribution<> noise{0,stddev};
+		return noise(gen);
+	}
+	wxPoint Robot::getBeliefPos()
+	{
+		return kalmanBeliefPos;
+	}
+	const std::vector<wxPoint>& Robot::getKalmanBeliefPath() const
+	{
+		return kalmanBeliefPath;
+	}
+	const ParticleFilter& Robot::getParticleFilter() const
+	{
+		return particleF;
+	}
+	const std::vector<wxPoint>& Robot::getParticleBeliefPath() const
+	{
+		return particleBeliefPath;
 	}
 
 } // namespace Model

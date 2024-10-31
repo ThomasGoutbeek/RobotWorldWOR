@@ -4,6 +4,8 @@
 #include "Config.hpp"
 
 #include "ModelObject.hpp"
+#include "MathUtils.hpp"
+#include "Shape2DUtils.hpp"
 
 #include <mutex>
 #include <thread>
@@ -103,7 +105,7 @@ namespace Model
 			/**
 			 * Get the raw measurements. This typically is done in the low level driver.
 			 */
-			virtual std::shared_ptr< AbstractStimulus > getStimulus() const = 0;
+			virtual std::shared_ptr< AbstractStimulus > getStimulus(double angle,wxPoint robotPos) const = 0;
 			/**
 			 * Translate the stimulus into a percept. This typically is done in the high level driver.
 			 */

@@ -13,6 +13,8 @@
 #include "Point.hpp"
 #include "Region.hpp"
 #include "Size.hpp"
+#include "KalmanFilter.hpp"
+#include "ParticleFilter.hpp"
 
 #include <iostream>
 #include <memory>
@@ -187,6 +189,14 @@ namespace Model
 			 *
 			 */
 			wxPoint getBackRight() const;
+			wxPoint getUpdate(double angle);
+			wxPoint getMeasurement(wxPoint update);
+			void kalmanFilter(double angle);
+			double generateNoise(double stddev);
+			wxPoint getBeliefPos();
+			const std::vector<wxPoint>& getKalmanBeliefPath() const;
+			const ParticleFilter& getParticleFilter() const;
+			const std::vector<wxPoint>& getParticleBeliefPath() const;
 			/**
 			 * @name Observer functions
 			 */
@@ -330,6 +340,17 @@ namespace Model
 			 *
 			 */
 			Messaging::ServerPtr server;
+			KalmanFilter kalmanF;
+			ParticleFilter particleF;
+			double totalDistance;
+			double previousDistance;
+			wxPoint kalmanBeliefPos;
+			wxPoint particleBeliefPos;
+			double stddevAngle;
+			double stddevDistance;
+			std::vector<wxPoint> kalmanBeliefPath;
+			std::vector<wxPoint> particleBeliefPath;
+			
 	};
 } // namespace Model
 #endif // ROBOT_HPP_

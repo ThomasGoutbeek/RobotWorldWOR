@@ -56,4 +56,18 @@ namespace Application
 	{
 		worldNumber = aWorldNumber;
 	}
+	/**
+	 *
+	 */
+	unsigned long MainSettings::getFilterType() const
+	{
+		return filterType;
+	}
+	/**
+	 *
+	 */
+	void MainSettings::setFilterType( unsigned long aFilterType)
+	{
+		filterType = aFilterType;
+	}
 } /* namespace Application */

@@ -1,6 +1,8 @@
 #include "AbstractSensor.hpp"
 
 #include "AbstractAgent.hpp"
+#include "Robot.hpp"
+#include "Shape2DUtils.hpp"
 
 namespace Model
 {
@@ -54,11 +56,20 @@ namespace Model
 		{
 			while (running == true)
 			{
-				std::shared_ptr< AbstractStimulus > currentStimulus = getStimulus();
-				std::shared_ptr< AbstractPercept > currentPercept = getPerceptFor( currentStimulus);
-				sendPercept( currentPercept);
-
+				Robot* robot = dynamic_cast<Robot*>(agent);
+				if(robot)
+				{
+					robot->currentRadarPointCloud.clear();
+					for(int i = 0;i<180;i++)
+					{
+						double angle = Utils::MathUtils::toRadians(2*i);
+						std::shared_ptr< AbstractStimulus > currentStimulus = getStimulus(angle,robot->getPosition());
+						std::shared_ptr< AbstractPercept > currentPercept = getPerceptFor( currentStimulus);
+						sendPercept( currentPercept);
+					}
+				}
 				std::this_thread::sleep_for( std::chrono::milliseconds( aSleepTime));
+				
 			}
 		}
 		catch (std::exception& e)
@@ -70,6 +81,8 @@ namespace Model
 			std::cerr << __PRETTY_FUNCTION__ << ": unknown exception" << std::endl;
 		}
 	}
+
+	
 	/**
 	 *
 	 */

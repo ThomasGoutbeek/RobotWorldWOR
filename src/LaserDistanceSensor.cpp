@@ -25,7 +25,7 @@ namespace Model
 	/**
 	 *
 	 */
-	std::shared_ptr< AbstractStimulus > LaserDistanceSensor::getStimulus() const
+	std::shared_ptr< AbstractStimulus > LaserDistanceSensor::getStimulus(double angle,wxPoint position) const
 	{
 		Robot* robot = dynamic_cast<Robot*>(agent);
 		if(robot)

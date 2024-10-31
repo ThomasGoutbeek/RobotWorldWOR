@@ -89,6 +89,7 @@ namespace Application
 			wxCheckBox* drawOpenSetCheckbox;
 			wxSpinCtrl* speedSpinCtrl;
 			wxRadioBox* worldNumber;
+			wxRadioBox* filterType;
 
 			wxPanel* buttonPanel;
 
@@ -103,6 +104,9 @@ namespace Application
 			void OnWorld1( wxCommandEvent& anEvent);
 			void OnWorld2( wxCommandEvent& anEvent);
 			void OnWorld3( wxCommandEvent& anEvent);
+
+			void onKalmanFilter( wxCommandEvent& anEvent);
+			void onParticleFilter( wxCommandEvent& anEvent);
 
 			void OnStartRobot( wxCommandEvent& anEvent);
 			void OnStopRobot( wxCommandEvent& anEvent);

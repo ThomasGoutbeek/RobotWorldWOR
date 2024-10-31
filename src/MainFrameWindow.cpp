@@ -183,7 +183,7 @@ namespace Application
 					wxGBPosition( 1, 1),
 					wxGBSpan( 1, 1),
 					wxSHRINK);
-		robotWorldCanvas->SetMinSize( wxSize( 500,500));
+		robotWorldCanvas->SetMinSize( wxSize( 1024,1024));
 
 		sizer->Add( 5, 5,
 					wxGBPosition( 2, 2),
@@ -417,6 +417,43 @@ namespace Application
 		sizer->AddGrowableRow( 3);
 		sizer->AddGrowableCol( 1);
 
+		std::array<std::string,2> filterChoicesArray
+		{
+			"Kalmanfilter",
+			"Particlefilter"
+		};
+
+		sizer->Add(filterType = makeRadiobox(panel,filterChoicesArray,
+											  [this](wxCommandEvent& event)
+											  {
+												  wxRadioBox* radiobox = dynamic_cast< wxRadioBox* >(event.GetEventObject());
+												  if(radiobox)
+												  {
+													  switch(radiobox->GetSelection())
+													  {
+														  case 0:
+														  {
+															  onKalmanFilter(event);
+															  break;
+														  }
+														  case 1:
+														  {
+															  onParticleFilter(event);
+															  break;
+														  }
+														  default:
+														  {
+															  TRACE_DEVELOP("Unknown filter selection");
+														  }
+													  }
+												  }
+											  },
+											  "Filter type",
+											  wxRA_SPECIFY_ROWS),
+				   wxGBPosition( 3, 2),
+				   wxGBSpan( 1, 1),
+				   wxSHRINK | wxALIGN_CENTER);
+
 		sizer->Add( 5, 5,
 					wxGBPosition( 4, 3),
 					wxGBSpan( 1, 1),
@@ -429,6 +466,7 @@ namespace Application
 		drawOpenSetCheckbox->SetValue(mainSettings.getDrawOpenSet());
 		speedSpinCtrl->SetValue(static_cast<int>(mainSettings.getSpeed()));
 		worldNumber->SetSelection(static_cast<int>(mainSettings.getWorldNumber()));
+		filterType->SetSelection(static_cast<int>(mainSettings.getFilterType()));
 
 		if(MainApplication::isArgGiven("-debug_grid"))
 		{
@@ -632,6 +670,26 @@ namespace Application
 
 		MainSettings& mainSettings = MainApplication::getSettings();
 		mainSettings.setWorldNumber(worldNumber->GetSelection());
+	}
+	/**
+	 *
+	 */
+	void MainFrameWindow::onKalmanFilter( wxCommandEvent& anEvent)
+	{
+		TRACE_DEVELOP(anEvent.GetString().ToStdString());
+
+		MainSettings& mainSettings = MainApplication::getSettings();
+		mainSettings.setFilterType(filterType->GetSelection());
+	}
+	/**
+	 *
+	 */
+	void MainFrameWindow::onParticleFilter( wxCommandEvent& anEvent)
+	{
+		TRACE_DEVELOP(anEvent.GetString().ToStdString());
+
+		MainSettings& mainSettings = MainApplication::getSettings();
+		mainSettings.setFilterType(filterType->GetSelection());
 	}
 	/**
 	 *
