@@ -41,8 +41,8 @@ void ParticleFilter::updateParticles(wxPoint measurement){
 void ParticleFilter::calcWeight(const LaserDistanceSensor& sensor)
 {
     std::vector<double> angles(NR_OF_LASERS);
-    for (std::size_t j = 0; j < NR_OF_LASERS; ++j) {
-        angles[j] = Utils::MathUtils::toRadians(2 * j);
+    for (int i = 0; i < NR_OF_LASERS; ++i) {
+        angles[i] = Utils::MathUtils::toRadians(static_cast<double>(2 * i));
     }
     
     for(std::size_t i = 0;i<NR_OF_PARTICLES;i++)
@@ -77,7 +77,7 @@ void ParticleFilter::getNewParticles()
     for (int i =0;i<NR_OF_PARTICLES;i++) {
         double random_number = d(gen);
         auto it = std::lower_bound(weights.begin(), weights.end(), random_number);
-        int index = std::distance(weights.begin(), it);
+        std::size_t index = std::distance(weights.begin(), it);
         wxPoint new_particle = oldParticles.at(index);
         new_particle.x += offset_dist(gen);
         new_particle.y += offset_dist(gen);
@@ -88,8 +88,8 @@ void ParticleFilter::getNewParticles()
 }
 wxPoint ParticleFilter::getBeliefPos()
 {
-    double sum_x = 0;
-    double sum_y = 0;
+    int sum_x = 0;
+    int sum_y = 0;
     for(wxPoint particle:particles)
     {
         sum_x = sum_x + particle.x;

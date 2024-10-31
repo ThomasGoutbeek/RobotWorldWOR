@@ -197,6 +197,8 @@ namespace Model
 			const std::vector<wxPoint>& getKalmanBeliefPath() const;
 			const ParticleFilter& getParticleFilter() const;
 			const std::vector<wxPoint>& getParticleBeliefPath() const;
+			double safeDoubleConvert(int value);
+			wxPoint safePointConvert(double x, double y);
 			/**
 			 * @name Observer functions
 			 */

@@ -46,7 +46,7 @@ wxPoint KalmanFilter::filter(const Matrix<double,2,1>& update,const Matrix<doubl
     calcAdjustedState(states,kalmanGain,measurement);
     calcAdjustedProcessCov(covariance,kalmanGain);
 
-    wxPoint beliefPos(states[0][0],states[0][1]);
+    wxPoint beliefPos(static_cast<int>(round(states[0][0])),static_cast<int>(round(states[0][1])));
     return beliefPos;
 }
 

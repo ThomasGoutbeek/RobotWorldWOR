@@ -49,9 +49,9 @@ namespace Model
 								acting(false),
 								driving(false),
 								communicating(false),
-								kalmanF(Matrix<double,2,1>{position.x,position.y},Matrix<double,2,2>{{1,0},{0,1}}),
-								previousDistance(0),
-								totalDistance(0)
+								kalmanF(Matrix<double,2,1>{safeDoubleConvert(position.x),safeDoubleConvert(position.y)},Matrix<double,2,2>{{1.0,0.0},{0.0,1.0}}),
+								totalDistance(0),
+								previousDistance(0)
 
 	{
 		std::shared_ptr< AbstractSensor > laserSensor = std::make_shared<LaserDistanceSensor>( *this);
@@ -458,7 +458,9 @@ namespace Model
 			{
 				kalmanBeliefPos = position;
 				kalmanBeliefPath.clear();
-				kalmanF.setStates(Matrix<double,2,1>{position.x,position.y});
+				double xPos = safeDoubleConvert(position.x);
+				double yPos = safeDoubleConvert(position.y);
+				kalmanF.setStates(Matrix<double,2,1>{xPos,yPos});
 			}
 			else{
 				particleBeliefPath.clear();
@@ -636,7 +638,7 @@ namespace Model
 	wxPoint Robot::getUpdate(double angle){
 		double deltaX = previousDistance*cos(angle);
 		double deltaY = previousDistance*sin(angle);
-		return wxPoint(deltaX,deltaY);
+		return safePointConvert(deltaX,deltaY);
 	}
 
 	wxPoint Robot::getMeasurement(wxPoint update)
@@ -646,7 +648,7 @@ namespace Model
 		double measurementNoiseY = generateNoise(stddevDistance)*sin(stddevAngleRad);
 		double measurementX = update.x + measurementNoiseX;
 		double measurementY = update.y + measurementNoiseY;
-		return wxPoint(measurementX,measurementY);
+		return safePointConvert(measurementX,measurementY);
 	}
 
 	void Robot::kalmanFilter(double angle)
@@ -660,8 +662,9 @@ namespace Model
 
 		double covarianceDeltaX = pow(stddevDistance * cos(stddevAngleRad),2);
 		double covarianceDeltaY = pow(stddevDistance * sin(stddevAngleRad),2);
-		
-		Matrix<double,2,1> updateMatrix{update.x,update.y};
+		double updateX = safeDoubleConvert(update.x);
+		double updateY = safeDoubleConvert(update.y);
+		Matrix<double,2,1> updateMatrix{updateX,updateY};
 		Matrix<double,2,2> sensorStd{{covarianceDeltaX,0},{0,covarianceDeltaY}};
 		Matrix<double,2,1> measurementMatrix{totalX,totalY};
 		kalmanBeliefPos = kalmanF.filter(updateMatrix,sensorStd,measurementMatrix);
@@ -690,6 +693,14 @@ namespace Model
 	const std::vector<wxPoint>& Robot::getParticleBeliefPath() const
 	{
 		return particleBeliefPath;
+	}
+	double Robot::safeDoubleConvert(int value)
+	{
+		return static_cast<double>(value);
+	}
+	wxPoint Robot::safePointConvert(double x, double y)
+	{
+		return wxPoint(static_cast<int>(round(x)),static_cast<int>(round(y)));
 	}
 
 } // namespace Model
