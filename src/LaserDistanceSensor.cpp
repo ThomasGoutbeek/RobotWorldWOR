@@ -34,27 +34,24 @@ namespace Model
 			static std::mt19937 gen{rd()};
 		    std::normal_distribution<> noise{0,LaserDistanceSensor::stddev};
 
-			double angle = Utils::Shape2DUtils::getAngle( robot->getFront());
 			std::vector< WallPtr > walls = RobotWorld::getRobotWorld().getWalls();
-
-			wxPoint robotLocation = robot->getPosition();
 
 			wxPoint intersection{-1,-1};
 			for (std::shared_ptr< Wall > wall : walls)
 			{
 				wxPoint wallPoint1 = wall->getPoint1();
 				wxPoint wallPoint2 = wall->getPoint2();
-				wxPoint laserEndpoint{	static_cast<int>(robotLocation.x + std::cos( angle) * laserBeamLength + noise(gen)) ,
-										static_cast<int>(robotLocation.y + std::sin( angle) * laserBeamLength + noise(gen))};
+				wxPoint laserEndpoint{	static_cast<int>(position.x + std::cos( angle) * laserBeamLength + noise(gen)) ,
+										static_cast<int>(position.y + std::sin( angle) * laserBeamLength + noise(gen))};
 
-				wxPoint currentIntersection = Utils::Shape2DUtils::getIntersection( wallPoint1, wallPoint2, robotLocation, laserEndpoint);
+				wxPoint currentIntersection = Utils::Shape2DUtils::getIntersection( wallPoint1, wallPoint2, position, laserEndpoint);
 
 				if (currentIntersection != wxDefaultPosition)
 				{
 					if(intersection == wxDefaultPosition)
 					{
 						intersection = currentIntersection;
-					}else if(Utils::Shape2DUtils::distance(robotLocation,currentIntersection) < Utils::Shape2DUtils::distance(robotLocation,intersection))
+					}else if(Utils::Shape2DUtils::distance(position,currentIntersection) < Utils::Shape2DUtils::distance(position,intersection))
 					{
 						intersection = currentIntersection;
 					}
@@ -62,7 +59,7 @@ namespace Model
 			}
 			if(intersection != wxDefaultPosition)
 			{
-				double distance = Utils::Shape2DUtils::distance(robotLocation,intersection);
+				double distance = Utils::Shape2DUtils::distance(position,intersection);
 				return std::make_shared< DistanceStimulus >( angle,distance);
 			}
 		}
