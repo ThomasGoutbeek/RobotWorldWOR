@@ -11,6 +11,7 @@
 #include "Shape2DUtils.hpp"
 #include "Trace.hpp"
 #include "Wall.hpp"
+#include "ConfigVar.hpp"
 
 #include <cmath>
 
@@ -272,8 +273,10 @@ namespace View
 			}
 		}
 		// Draw the radar endPoints that are actually touching the walls
-		
-		dc.SetPen( wxPen(  "PURPLE", borderWidth, wxPENSTYLE_SOLID));
+		ConfigVar configVar("../src/config.ini");
+		std::string colourName = configVar.getVar("Colours","beliefPath");
+		wxColour pathColour(colourName);
+		dc.SetPen( wxPen( pathColour, borderWidth, wxPENSTYLE_SOLID));
 		const std::vector<wxPoint>* beliefPath;
 		if(Application::MainApplication::getSettings().getFilterType()==0){
 			beliefPath = &getRobot()->getKalmanBeliefPath();

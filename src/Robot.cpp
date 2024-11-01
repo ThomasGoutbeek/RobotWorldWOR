@@ -14,6 +14,7 @@
 #include "Shape2DUtils.hpp"
 #include "Wall.hpp"
 #include "WayPoint.hpp"
+#include "ConfigVar.hpp"
 
 #include <random>
 #include <chrono>
@@ -60,8 +61,10 @@ namespace Model
 		// We use the real position for starters, not an estimated position.
 		startPosition = position;
 		kalmanBeliefPos = position;
-		stddevAngle = 2;
-		stddevDistance = 1;
+
+		ConfigVar configVar( "../src/config.ini");
+		stddevAngle = std::stoi(configVar.getVar( "StandardDeviation", "compass"));
+		stddevDistance = std::stoi(configVar.getVar( "StandardDeviation", "odometer"));
 	}
 	/**
 	 *

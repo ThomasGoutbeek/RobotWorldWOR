@@ -110,6 +110,7 @@ am_robotworld_OBJECTS = robotworld-AbstractActuator.$(OBJEXT) \
 	robotworld-AbstractSensor.$(OBJEXT) robotworld-AStar.$(OBJEXT) \
 	robotworld-BoundedVector.$(OBJEXT) \
 	robotworld-CommunicationService.$(OBJEXT) \
+	robotworld-ConfigVar.$(OBJEXT) \
 	robotworld-FileTraceFunction.$(OBJEXT) \
 	robotworld-Goal.$(OBJEXT) robotworld-GoalShape.$(OBJEXT) \
 	robotworld-KalmanFilter.$(OBJEXT) \
@@ -170,6 +171,7 @@ am__depfiles_remade = ./$(DEPDIR)/robotworld-AStar.Po \
 	./$(DEPDIR)/robotworld-AbstractSensor.Po \
 	./$(DEPDIR)/robotworld-BoundedVector.Po \
 	./$(DEPDIR)/robotworld-CommunicationService.Po \
+	./$(DEPDIR)/robotworld-ConfigVar.Po \
 	./$(DEPDIR)/robotworld-FileTraceFunction.Po \
 	./$(DEPDIR)/robotworld-Goal.Po \
 	./$(DEPDIR)/robotworld-GoalShape.Po \
@@ -439,6 +441,7 @@ robotworld_SOURCES = AbstractActuator.cpp	\
 						AStar.cpp	\
 						BoundedVector.cpp	\
 						CommunicationService.cpp	\
+						ConfigVar.cpp	\
 						FileTraceFunction.cpp	\
 						Goal.cpp	\
 						GoalShape.cpp	\
@@ -495,9 +498,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/Makefile
+	  $(AUTOMAKE) --gnu src/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -596,6 +599,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/robotworld-AbstractSensor.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/robotworld-BoundedVector.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/robotworld-CommunicationService.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/robotworld-ConfigVar.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/robotworld-FileTraceFunction.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/robotworld-Goal.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/robotworld-GoalShape.Po@am__quote@ # am--include-marker
@@ -746,6 +750,20 @@ robotworld-CommunicationService.obj: CommunicationService.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='CommunicationService.cpp' object='robotworld-CommunicationService.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(robotworld_CPPFLAGS) $(CPPFLAGS) $(robotworld_CXXFLAGS) $(CXXFLAGS) -c -o robotworld-CommunicationService.obj `if test -f 'CommunicationService.cpp'; then $(CYGPATH_W) 'CommunicationService.cpp'; else $(CYGPATH_W) '$(srcdir)/CommunicationService.cpp'; fi`
+
+robotworld-ConfigVar.o: ConfigVar.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(robotworld_CPPFLAGS) $(CPPFLAGS) $(robotworld_CXXFLAGS) $(CXXFLAGS) -MT robotworld-ConfigVar.o -MD -MP -MF $(DEPDIR)/robotworld-ConfigVar.Tpo -c -o robotworld-ConfigVar.o `test -f 'ConfigVar.cpp' || echo '$(srcdir)/'`ConfigVar.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/robotworld-ConfigVar.Tpo $(DEPDIR)/robotworld-ConfigVar.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ConfigVar.cpp' object='robotworld-ConfigVar.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(robotworld_CPPFLAGS) $(CPPFLAGS) $(robotworld_CXXFLAGS) $(CXXFLAGS) -c -o robotworld-ConfigVar.o `test -f 'ConfigVar.cpp' || echo '$(srcdir)/'`ConfigVar.cpp
+
+robotworld-ConfigVar.obj: ConfigVar.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(robotworld_CPPFLAGS) $(CPPFLAGS) $(robotworld_CXXFLAGS) $(CXXFLAGS) -MT robotworld-ConfigVar.obj -MD -MP -MF $(DEPDIR)/robotworld-ConfigVar.Tpo -c -o robotworld-ConfigVar.obj `if test -f 'ConfigVar.cpp'; then $(CYGPATH_W) 'ConfigVar.cpp'; else $(CYGPATH_W) '$(srcdir)/ConfigVar.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/robotworld-ConfigVar.Tpo $(DEPDIR)/robotworld-ConfigVar.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ConfigVar.cpp' object='robotworld-ConfigVar.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(robotworld_CPPFLAGS) $(CPPFLAGS) $(robotworld_CXXFLAGS) $(CXXFLAGS) -c -o robotworld-ConfigVar.obj `if test -f 'ConfigVar.cpp'; then $(CYGPATH_W) 'ConfigVar.cpp'; else $(CYGPATH_W) '$(srcdir)/ConfigVar.cpp'; fi`
 
 robotworld-FileTraceFunction.o: FileTraceFunction.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(robotworld_CPPFLAGS) $(CPPFLAGS) $(robotworld_CXXFLAGS) $(CXXFLAGS) -MT robotworld-FileTraceFunction.o -MD -MP -MF $(DEPDIR)/robotworld-FileTraceFunction.Tpo -c -o robotworld-FileTraceFunction.o `test -f 'FileTraceFunction.cpp' || echo '$(srcdir)/'`FileTraceFunction.cpp
@@ -1389,6 +1407,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/robotworld-AbstractSensor.Po
 	-rm -f ./$(DEPDIR)/robotworld-BoundedVector.Po
 	-rm -f ./$(DEPDIR)/robotworld-CommunicationService.Po
+	-rm -f ./$(DEPDIR)/robotworld-ConfigVar.Po
 	-rm -f ./$(DEPDIR)/robotworld-FileTraceFunction.Po
 	-rm -f ./$(DEPDIR)/robotworld-Goal.Po
 	-rm -f ./$(DEPDIR)/robotworld-GoalShape.Po
@@ -1476,6 +1495,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/robotworld-AbstractSensor.Po
 	-rm -f ./$(DEPDIR)/robotworld-BoundedVector.Po
 	-rm -f ./$(DEPDIR)/robotworld-CommunicationService.Po
+	-rm -f ./$(DEPDIR)/robotworld-ConfigVar.Po
 	-rm -f ./$(DEPDIR)/robotworld-FileTraceFunction.Po
 	-rm -f ./$(DEPDIR)/robotworld-Goal.Po
 	-rm -f ./$(DEPDIR)/robotworld-GoalShape.Po

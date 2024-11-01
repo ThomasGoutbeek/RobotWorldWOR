@@ -6,8 +6,10 @@
 #include "Wall.hpp"
 #include "Shape2DUtils.hpp"
 #include "MathUtils.hpp"
+#include "ConfigVar.hpp"
 
 #include <random>
+
 
 namespace Model
 {
@@ -21,6 +23,8 @@ namespace Model
 	LaserDistanceSensor::LaserDistanceSensor( Robot& aRobot) :
 								AbstractSensor( aRobot)
 	{
+		std::string filename = "../src/config.ini";
+		stddev = std::stoi(ConfigVar(filename).getVar( "StandardDeviation", "lidar"));
 	}
 	/**
 	 *

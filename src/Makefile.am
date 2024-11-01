@@ -5,6 +5,7 @@ robotworld_SOURCES 	= 	AbstractActuator.cpp	\
 						AStar.cpp	\
 						BoundedVector.cpp	\
 						CommunicationService.cpp	\
+						ConfigVar.cpp	\
 						FileTraceFunction.cpp	\
 						Goal.cpp	\
 						GoalShape.cpp	\
